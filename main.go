@@ -6,7 +6,6 @@ import (
     "log"
     "net"
     "flag"
-    "time"
     "net/http"
     "os/signal"
     
@@ -36,7 +35,7 @@ func WSocket2UDSocket(l net.Listener, c net.Conn, wc *websocket.Conn) {
 }
 
 func UDSocket2WSocket(l net.Listener, c net.Conn, wc *websocket.Conn) {
-    message := make([]byte, 4)
+    message := make([]byte, 512)
     for {
         nr, err := c.Read(message[:])
         if err != nil {
@@ -47,7 +46,6 @@ func UDSocket2WSocket(l net.Listener, c net.Conn, wc *websocket.Conn) {
         if err := wc.WriteMessage(websocket.BinaryMessage, data); err != nil {
             gracefulExit(l, c, wc, fmt.Sprintf("Websockets writing error: %s", err))
         }
-        time.Sleep(3*time.Millisecond)
     }
 }
 
@@ -72,7 +70,6 @@ func main() {
     }()
     
     var dialer *websocket.Dialer
-    //c, _, err := dialer.Dial("wss://ws.ptt.cc/bbs", http.Header{"Origin": {"app://pcman"}})
     c, _, err := dialer.Dial(*ws_url, http.Header{"Origin": {"app://pcman"}})
     if err != nil {
         l.Close()
