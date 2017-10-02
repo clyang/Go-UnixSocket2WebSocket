@@ -21,6 +21,9 @@ func gracefulExit(l net.Listener, c net.Conn, wc *websocket.Conn, msg string){
 }
 
 func WSocket2UDSocket(l net.Listener, c net.Conn, wc *websocket.Conn) {
+    // First, force telnet to use BINARY transmission
+    c.Write([]byte{255, 253, 0})
+    
     for {
         _, message, err := wc.ReadMessage()
         if err != nil {
